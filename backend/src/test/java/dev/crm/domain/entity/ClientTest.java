@@ -1,4 +1,4 @@
-package dev.crm.entity;
+package dev.crm.domain.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import dev.crm.error.DomainError;
+import dev.crm.domain.error.DomainError;
+
 
 public class ClientTest {
     @Test

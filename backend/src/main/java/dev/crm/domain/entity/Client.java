@@ -1,8 +1,8 @@
-package dev.crm.entity;
+package dev.crm.domain.entity;
 
 import java.util.regex.Pattern;
 
-import dev.crm.error.DomainError;
+import dev.crm.domain.error.DomainError;
 
 public class Client {
     private String name;

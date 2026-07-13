@@ -1,4 +1,4 @@
-package dev.crm.error;
+package dev.crm.domain.error;
 
 public class DomainError extends RuntimeException {
     public DomainError(String message) {
