@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.crm.application.repository.ClientRepository;
+import dev.crm.domain.error.ApplicationError;
 import dev.crm.domain.error.DomainError;
 import dev.crm.infra.repository.ClientMemoryRepository;
 
@@ -34,7 +35,7 @@ public class SaveClientTests {
     @Test
     void executeWithEmailAlreadyExists() {
         this.sut.execute(new SaveClientInput("John Doe", "john.doe@example.com", "11988334455"));
-        var exception = assertThrows(DomainError.class, () -> this.sut.execute(new SaveClientInput("John Doe", "john.doe@example.com", "11988334455")));
+        var exception = assertThrows(ApplicationError.class, () -> this.sut.execute(new SaveClientInput("John Doe", "john.doe@example.com", "11988334455")));
         assertEquals(exception.getMessage(), "Client already exists");
     }
     
