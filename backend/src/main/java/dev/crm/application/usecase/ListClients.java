@@ -17,7 +17,8 @@ public class ListClients {
         return clients.stream().map((Client client) -> new ListClientsOutput(
             client.getName(),
             client.getEmail(), 
-            client.getPhone()
+            client.getPhone(),
+            client.getId().orElse(null)
         )).toList();
     }
 }

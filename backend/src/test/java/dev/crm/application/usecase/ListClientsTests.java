@@ -23,10 +23,11 @@ public class ListClientsTests {
 
     @Test
     void executWithSuccess() {
-        var client = new Client("Alicia Dessendre", "alicia@crm.com", "11988334455");
+        var client = Client.create("Alicia Dessendre", "alicia@crm.com", "11988334455");
         this.repository.save(client);
         List<ListClientsOutput> clients = sut.execute();
         assertEquals(clients.size(), 1);
+        assertEquals(client.getId().get(), 1);
         assertEquals(client.getName(), clients.get(0).name());
         assertEquals(client.getEmail(), clients.get(0).email());
         assertEquals(client.getPhone(), clients.get(0).phone());
