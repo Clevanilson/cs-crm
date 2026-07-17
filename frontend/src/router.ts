@@ -10,6 +10,10 @@ const routes: RouteRecordRaw[] = [
     path: '/clients',
     component: () => import('@/ui/pages/Clients.vue'),
   },
+  {
+    path: '/clients/new',
+    component: () => import('@/ui/pages/ClientForm.vue'),
+  },
 ]
 
 const router = createRouter({
