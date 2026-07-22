@@ -1,12 +1,14 @@
 package dev.crm.infra.repository;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import dev.crm.application.repository.ClientRepository;
+import dev.crm.domain.dto.PageResultDTO;
+import dev.crm.domain.dto.PaginationDTO;
 import dev.crm.domain.entity.Client;
 import dev.crm.infra.model.ClientModel;
 
@@ -14,8 +16,10 @@ import dev.crm.infra.model.ClientModel;
 public interface ClientDatabaseRepository extends JpaRepository<ClientModel, Long>,  ClientRepository{
     Optional<ClientModel> findByEmail(String email); 
 
-    default List<Client> list() {
-        return findAll().stream().map(this::MapClientModelToClient).toList();
+    default PageResultDTO<Client> list(PaginationDTO pagination) {
+        var result = findAll(PageRequest.of(pagination.page(), pagination.size()));
+        var items = result.getContent().stream().map(this::MapClientModelToClient).toList();
+        return new PageResultDTO<>(items, result.getTotalElements());
     }
 
     default Long save(Client client) {

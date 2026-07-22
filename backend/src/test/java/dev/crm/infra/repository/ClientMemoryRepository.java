@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import dev.crm.application.repository.ClientRepository;
+import dev.crm.domain.dto.PageResultDTO;
+import dev.crm.domain.dto.PaginationDTO;
 import dev.crm.domain.entity.Client;
 import dev.crm.domain.error.DomainError;
 
@@ -12,8 +14,10 @@ public class ClientMemoryRepository implements ClientRepository {
     private List<Client> clients = new ArrayList<>();
 
     @Override
-    public List<Client> list() {
-        return this.clients;
+    public PageResultDTO<Client> list(PaginationDTO pagination) {
+        int fromIndex = Math.min(pagination.page() * pagination.size(), this.clients.size());
+        int toIndex = Math.min(fromIndex + pagination.size(), this.clients.size());
+        return new PageResultDTO<>(new ArrayList<>(this.clients.subList(fromIndex, toIndex)), this.clients.size());
     }
 
     @Override

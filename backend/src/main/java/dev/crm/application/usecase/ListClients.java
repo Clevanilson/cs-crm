@@ -1,8 +1,7 @@
 package dev.crm.application.usecase;
 
-import java.util.List;
-
 import dev.crm.application.repository.ClientRepository;
+import dev.crm.domain.dto.PaginationDTO;
 import dev.crm.domain.entity.Client;
 
 public class ListClients {
@@ -12,14 +11,14 @@ public class ListClients {
         this.repository = repository;
     }
     
-    public List<ListClientsOutput> execute() {
-        var clients = this.repository.list();
-        return clients.stream().map((Client client) -> new ListClientsOutput(
+    public ListClientsPageOutput execute(PaginationDTO input) {
+        var result = this.repository.list(input);
+        var items = result.items().stream().map((Client client) -> new ListClientsOutput(
             client.getName(),
             client.getEmail(), 
             client.getPhone(),
             client.getId().orElse(null)
         )).toList();
+        return new ListClientsPageOutput(items, result.total(), input.page(), input.size());
     }
 }
-
