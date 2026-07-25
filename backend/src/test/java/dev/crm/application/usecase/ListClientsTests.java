@@ -27,11 +27,11 @@ public class ListClientsTests {
             this.repository.save(Client.create(names[i], "client" + (i + 1) + "@crm.com", "1198833445" + i));
         }
         ListClientsPageOutput page = sut.execute(new PaginationDTO(1, 2));
-        assertEquals(2, page.items().size());
-        assertEquals(5, page.total());
-        assertEquals(1, page.page());
-        assertEquals(2, page.size());
-        assertEquals("Verso", page.items().get(0).name());
-        assertEquals("Renoir", page.items().get(1).name());
+        assertEquals(2, page.data().size());
+        assertEquals(5, page.pagination().total());
+        assertEquals(1, page.pagination().page());
+        assertEquals(2, page.pagination().size());
+        assertEquals("Verso", page.data().get(0).name());
+        assertEquals("Renoir", page.data().get(1).name());
     }
 }
