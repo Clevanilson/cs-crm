@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { ClientResDto } from '@/domain/dto/client-res.dto'
+import type { ClientResDTO } from '@/domain/dto/client-res.dto'
 import Button from '@/ui/components/Button.vue'
 import FeatureHeader from '@/ui/components/FeatureHeader.vue'
+import Pagination from '@/ui/components/Pagination.vue'
 import Table from '@/ui/components/Table.vue'
 import type { TableColumn } from '@/domain/type/table-column'
 import { useClients } from './clients.state'
 
 const router = useRouter()
-const { clients, loading, load } = useClients()
+const { clients, loading, page, pagination, totalPages, load, goToPage, nextPage, previousPage } =
+  useClients()
 
-const columns: TableColumn<ClientResDto>[] = [
+const columns: TableColumn<ClientResDTO>[] = [
   { key: 'name', label: 'Nome' },
   { key: 'email', label: 'E-mail' },
   { key: 'phone', label: 'Telefone' },
@@ -30,9 +32,19 @@ onMounted(() => {
 
     <Table
       :columns="columns"
-      :rows="clients ?? []"
+      :rows="clients"
       :loading="loading"
       empty-message="Nenhum cliente encontrado"
+    />
+
+    <Pagination
+      :page="page"
+      :total-pages="totalPages"
+      :total="pagination.total"
+      :disabled="loading"
+      @previous="previousPage"
+      @next="nextPage"
+      @go-to="goToPage"
     />
   </section>
 </template>

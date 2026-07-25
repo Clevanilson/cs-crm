@@ -1,3 +1,3 @@
-export type IdResDto = {
+export type IdResDTO = {
   id: number
 }

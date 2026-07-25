@@ -1,4 +1,4 @@
-export type ClientResDto = {
+export type ClientResDTO = {
   id: string
   name: string
   email: string

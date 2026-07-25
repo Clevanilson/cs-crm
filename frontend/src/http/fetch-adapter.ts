@@ -1,11 +1,13 @@
+import type { HttpOptions, HttpParam } from './http-client'
+
 export class FetchAdapter {
-  async get(url: string) {
-    const response = await fetch(this.parseUrl(url))
+  async get(url: string, options?: HttpOptions) {
+    const response = await fetch(this.parseUrl(url, options))
     return this.parse(response)
   }
 
-  async post(url: string, data: unknown) {
-    const response = await fetch(this.parseUrl(url), {
+  async post(url: string, data: unknown, options?: HttpOptions) {
+    const response = await fetch(this.parseUrl(url, options), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -13,8 +15,8 @@ export class FetchAdapter {
     return this.parse(response)
   }
 
-  async put(url: string, data: unknown) {
-    const response = await fetch(this.parseUrl(url), {
+  async put(url: string, data: unknown, options?: HttpOptions) {
+    const response = await fetch(this.parseUrl(url, options), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -22,8 +24,8 @@ export class FetchAdapter {
     return this.parse(response)
   }
 
-  async delete(url: string) {
-    const response = await fetch(this.parseUrl(url), {
+  async delete(url: string, options?: HttpOptions) {
+    const response = await fetch(this.parseUrl(url, options), {
       method: 'DELETE',
     })
     return this.parse(response)
@@ -54,7 +56,29 @@ export class FetchAdapter {
     return `Erro na requisição (${response.status})`
   }
 
-  private parseUrl(url: string): string {
-    return `http://localhost:8080/${url}`
+  private parseUrl(url: string, options?: HttpOptions): string {
+    let finalUrl = `http://localhost:8080/${url}`
+    if (options?.params) {
+      Object.entries(options.params).forEach(([key, value]) => {
+        finalUrl = this.parseParam(finalUrl, key, value)
+      })
+    }
+    if (options?.query) {
+      Object.entries(options.query).forEach(([key, value]) => {
+        finalUrl = this.parseQuery(finalUrl, key, value)
+      })
+    }
+    return finalUrl
+  }
+
+  private parseParam(url: string, key: string, value: HttpParam) {
+    return url.replace(`{${key}}`, value.toString())
+  }
+
+  private parseQuery(url: string, key: string, value: HttpParam) {
+    if (url.includes('?')) {
+      return `${url}&${key}=${value}`
+    }
+    return `${url}?${key}=${value}`
   }
 }
