@@ -7,7 +7,7 @@ import dev.crm.domain.dto.PaginationDTO;
 import dev.crm.domain.entity.Client;
 
 public interface ClientRepository {
-    PageResultDTO<Client> list(PaginationDTO pagination);
+    PageResultDTO<Client> list(PaginationDTO pagination, String name);
     Long save(Client client);
     Optional<Client> getByEmail(String email);
     Optional<Client> getByID(Long id);

@@ -14,10 +14,20 @@ public class ClientMemoryRepository implements ClientRepository {
     private List<Client> clients = new ArrayList<>();
 
     @Override
-    public PageResultDTO<Client> list(PaginationDTO pagination) {
-        int fromIndex = Math.min(pagination.page() * pagination.size(), this.clients.size());
-        int toIndex = Math.min(fromIndex + pagination.size(), this.clients.size());
-        return new PageResultDTO<>(new ArrayList<>(this.clients.subList(fromIndex, toIndex)), this.clients.size());
+    public PageResultDTO<Client> list(PaginationDTO pagination, String name) {
+        var filtered = this.clients.stream()
+            .filter(client -> matchesName(client, name))
+            .toList();
+        int fromIndex = Math.min(pagination.page() * pagination.size(), filtered.size());
+        int toIndex = Math.min(fromIndex + pagination.size(), filtered.size());
+        return new PageResultDTO<>(new ArrayList<>(filtered.subList(fromIndex, toIndex)), filtered.size());
+    }
+
+    private static boolean matchesName(Client client, String name) {
+        if (name == null || name.isBlank()) {
+            return true;
+        }
+        return client.getName().toLowerCase().contains(name.trim().toLowerCase());
     }
 
     @Override
