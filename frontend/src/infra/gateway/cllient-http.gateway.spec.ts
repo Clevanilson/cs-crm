@@ -31,6 +31,20 @@ describe(ClientHttpGateway.name, () => {
     expect(result).toEqual(response)
   })
 
+  it('[GET] /api/clients with name filter', async () => {
+    const response: OutputWithPaginationDTO<ClientResDTO> = {
+      data: [],
+      pagination: {
+        total: 0,
+        page: 0,
+        size: 10,
+      },
+    }
+    httpClient.addResponse(response)
+    await sut.list({ page: 0, size: 10, name: 'John' })
+    expect(httpClient.lastCall?.options?.query).toEqual({ page: 0, size: 10, name: 'John' })
+  })
+
   it('[POST] /api/clients', async () => {
     const response = {
       id: '1',

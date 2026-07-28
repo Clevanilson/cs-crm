@@ -76,9 +76,10 @@ export class FetchAdapter {
   }
 
   private parseQuery(url: string, key: string, value: HttpParam) {
+    const encoded = `${encodeURIComponent(key)}=${encodeURIComponent(value.toString())}`
     if (url.includes('?')) {
-      return `${url}&${key}=${value}`
+      return `${url}&${encoded}`
     }
-    return `${url}?${key}=${value}`
+    return `${url}?${encoded}`
   }
 }

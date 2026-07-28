@@ -1,9 +1,12 @@
 import type { ClientGateway } from '@/application/gateway/client.gateway'
 import { computed, inject, ref } from 'vue'
 import type { ClientResDTO } from '@/domain/dto/client-res.dto'
+import type { ListClientsReqDTO } from '@/domain/dto/list-clients-req.dto'
 import type { PaginationResDTO } from '@/domain/dto/pagination-res.dto'
 import { useSnackbarStore } from '@/stores/snackbar'
+import { SEARCH_DEBOUNCE_MS } from '@/domain/const/debounce.const'
 import { DEFAULT_PAGINATION } from '@/domain/const/pagination.const'
+import { Debounce } from '@/domain/service/debounce'
 
 export function useClients() {
   const clientGateway = inject<ClientGateway>('clientGateway')
@@ -12,7 +15,9 @@ export function useClients() {
   const clients = ref<ClientResDTO[]>([])
   const page = ref(DEFAULT_PAGINATION.page)
   const size = ref(DEFAULT_PAGINATION.size)
+  const name = ref('')
   const pagination = ref<PaginationResDTO>(DEFAULT_PAGINATION)
+  const searchDebounce = new Debounce()
   const totalPages = computed(() => {
     if (pagination.value.size <= 0) {
       return 0
@@ -25,7 +30,12 @@ export function useClients() {
   async function load() {
     try {
       loading.value = true
-      const response = await clientGateway?.list({ page: page.value, size: size.value })
+      const query: ListClientsReqDTO = { page: page.value, size: size.value }
+      const trimmedName = name.value.trim()
+      if (trimmedName) {
+        query.name = trimmedName
+      }
+      const response = await clientGateway?.list(query)
       clients.value = response?.data ?? []
       pagination.value = response?.pagination ?? DEFAULT_PAGINATION
     } catch (error) {
@@ -51,11 +61,20 @@ export function useClients() {
     await load()
   }
 
+  function searchByName(value: string) {
+    name.value = value
+    page.value = 0
+    searchDebounce.run(() => {
+      void load()
+    })
+  }
+
   return {
     clients,
     loading,
     page,
     size,
+    name,
     pagination,
     totalPages,
     hasPrevious,
@@ -64,5 +83,6 @@ export function useClients() {
     goToPage,
     nextPage,
     previousPage,
+    searchByName,
   }
 }
