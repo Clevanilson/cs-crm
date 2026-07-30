@@ -8,11 +8,11 @@ Ambos os lados seguem uma organização em camadas (domínio, aplicação e infr
 
 ## Stack
 
-| Camada   | Tecnologias                                      |
-| -------- | ------------------------------------------------ |
+| Camada   | Tecnologias                                       |
+| -------- | ------------------------------------------------- |
 | Backend  | Java 17, Spring Boot, Spring Data JPA, PostgreSQL |
-| Frontend | Vue 3, TypeScript, Vite, Pinia, Vue Router       |
-| Infra    | Docker Compose                                   |
+| Frontend | Vue 3, TypeScript, Vite, Pinia, Vue Router        |
+| Infra    | Docker Compose                                    |
 
 ## Funcionalidades
 
@@ -37,11 +37,11 @@ docker compose up
 
 Isso sobe três serviços:
 
-| Serviço  | URL / porta              |
-| -------- | ------------------------ |
-| Frontend | http://localhost:5173    |
-| Backend  | http://localhost:8080    |
-| Postgres | `localhost:5432`         |
+| Serviço  | URL / porta           |
+| -------- | --------------------- |
+| Frontend | http://localhost:5173 |
+| Backend  | http://localhost:8080 |
+| Postgres | `localhost:5432`      |
 
 Credenciais do banco (padrão do `docker-compose.yml`):
 
@@ -90,10 +90,16 @@ src/
 
 ## API
 
-| Método | Endpoint         | Descrição        |
-| ------ | ---------------- | ---------------- |
-| `GET`  | `/api/clients`   | Lista clientes   |
-| `POST` | `/api/clients`   | Cria um cliente  |
+| Método | Endpoint       | Descrição       |
+| ------ | -------------- | --------------- |
+| `GET`  | `/api/clients` | Lista clientes  |
+| `POST` | `/api/clients` | Cria um cliente |
+
+Especificação OpenAPI: [`backend/src/main/resources/static/openapi.yaml`](./backend/src/main/resources/static/openapi.yaml)
+
+Com o backend no ar, abra o Swagger UI em http://localhost:8080/swagger-ui.html
+
+![Swagger UI](./.github/images/swagger.png)
 
 ## Desenvolvimento local (sem Docker)
 

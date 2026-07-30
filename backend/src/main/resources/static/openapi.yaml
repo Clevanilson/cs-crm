@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  title: CRM API
+  description: |
+    API REST do backend CRM (cadastro e listagem de clientes).
+
+    Base URL local: `http://localhost:8080`
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:8080
+    description: Ambiente local (Docker Compose / Spring Boot)
+
+tags:
+  - name: Clients
+    description: Operações de clientes
+
+paths:
+  /api/clients:
+    get:
+      tags: [Clients]
+      summary: Listar clientes
+      description: |
+        Retorna clientes paginados. O filtro `name` é parcial e case-insensitive.
+        Sem `name` (ou em branco), lista todos os clientes.
+      operationId: listClients
+      parameters:
+        - name: page
+          in: query
+          description: Índice da página (base 0)
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Itens por página
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+        - name: name
+          in: query
+          description: Filtro por trecho do nome
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Página de clientes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListClientsPage"
+              example:
+                data:
+                  - id: 1
+                    name: Verso Dessendre
+                    email: verso@crm.com
+                    phone: "11988334455"
+                pagination:
+                  total: 1
+                  page: 0
+                  size: 10
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      tags: [Clients]
+      summary: Criar cliente
+      description: |
+        Cadastra um cliente. Valida nome, e-mail e telefone no domínio.
+        E-mail deve ser único.
+      operationId: saveClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveClientRequest"
+            example:
+              name: Verso Dessendre
+              email: verso@crm.com
+              phone: "11988334455"
+      responses:
+        "201":
+          description: Cliente criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+              example:
+                id: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  schemas:
+    SaveClientRequest:
+      type: object
+      required: [name, email, phone]
+      properties:
+        name:
+          type: string
+          description: Letras e espaços; 2 a 255 caracteres
+          minLength: 2
+          maxLength: 255
+          pattern: "^[A-Za-z ]{2,255}$"
+          example: Verso Dessendre
+        email:
+          type: string
+          format: email
+          description: E-mail válido e único
+          example: verso@crm.com
+        phone:
+          type: string
+          description: Deve conter 11 dígitos consecutivos
+          pattern: "\\d{11}"
+          example: "11988334455"
+
+    Client:
+      type: object
+      required: [id, name, email, phone]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Verso Dessendre
+        email:
+          type: string
+          format: email
+          example: verso@crm.com
+        phone:
+          type: string
+          example: "11988334455"
+
+    Pagination:
+      type: object
+      required: [total, page, size]
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total de registros
+          example: 1
+        page:
+          type: integer
+          description: Página atual
+          example: 0
+        size:
+          type: integer
+          description: Tamanho da página
+          example: 10
+
+    ListClientsPage:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Client"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    IdResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+
+    ErrorResponse:
+      type: object
+      required: [message, code]
+      properties:
+        message:
+          type: string
+          example: Invalid email
+        code:
+          type: string
+          enum:
+            - DOMAIN_ERROR
+            - APPLICATION_ERROR
+            - INTERNAL_SERVER_ERROR
+          example: DOMAIN_ERROR
+
+  responses:
+    BadRequest:
+      description: Erro de domínio ou de aplicação
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            domainError:
+              summary: Validação inválida
+              value:
+                message: Invalid name
+                code: DOMAIN_ERROR
+            applicationError:
+              summary: E-mail já cadastrado
+              value:
+                message: Client already exists
+                code: APPLICATION_ERROR
+
+    InternalError:
+      description: Erro inesperado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: Unexpected error
+            code: INTERNAL_SERVER_ERROR
